@@ -41,8 +41,10 @@ app.use(express.urlencoded({ extended: true }));
 // });
 
 const loginSchema = new mongoose.Schema({
+  firstName: String,
+  lastName: String,
   email: String,
-  password: String,
+  // password: String,
 });
 
 const registerInfo = mongoose.model("register", loginSchema);
@@ -56,10 +58,17 @@ const registerInfo = mongoose.model("register", loginSchema);
 app.post("/api/user", async (req, res) => {
   try {
     console.log(req.body);
-    const email = req.body.emailKey;
-    const password = req.body.passwordKey;
-    console.log(password);
-    const result = await new registerInfo({ email: email, password: password });
+    const firstName = req.body.values.firstName;
+    const lastName = req.body.values.lastName;
+    const email = req.body.values.email;
+
+    console.log(firstName, lastName, email);
+
+    const result = await new registerInfo({
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+    });
 
     result.save();
     res.status(200).json({ success: true, person: result });
@@ -67,19 +76,15 @@ app.post("/api/user", async (req, res) => {
     console.log(error);
   }
 });
-//   const result = await registerInfo.insertMany({
-//     email: req.body.emailKey,
-//     password: req.body.passwordKey,
-//   });
-//   console.log(result);
-//   res.status(201).json({ success: true, person: result });
-// } catch (error) {
-//   res
-//     .status(500)
-//     .json({ success: false, msg: `Errorrrrrr`, error: error.message });
-// }
 
-// data();
+app.get("/api/user/get", (req, res) => {
+  registerInfo.find({}, (err, result) => {
+    if (err) {
+      res.send(err);
+    }
+    res.send(result);
+  });
+});
 
 mongoose.connect(
   "mongodb://localhost:27017/testDB",
