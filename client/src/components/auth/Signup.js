@@ -1,6 +1,7 @@
 import React from "react";
 import { useFormik } from "formik";
-import UserList from "./userList";
+import { useNavigate } from "react-router-dom";
+// import UserList from "./userList";
 import {
   Box,
   Button,
@@ -13,6 +14,7 @@ import * as Yup from "yup";
 import axios from "axios";
 
 const SignupForm = () => {
+  // const history = useNavigate();
   const toast = useToast();
 
   const formik = useFormik({
@@ -20,6 +22,7 @@ const SignupForm = () => {
       firstName: "",
       lastName: "",
       email: "",
+      password: "",
     },
 
     validationSchema: Yup.object({
@@ -30,6 +33,9 @@ const SignupForm = () => {
         .max(20, "Must be 20 characters or less")
         .required("Required"),
       email: Yup.string().email("Invalid email address").required("Required"),
+      password: Yup.string()
+        .required("No password provided.")
+        .min(8, "Password is too short - should be 8 chars minimum."),
     }),
 
     onSubmit: (values, { resetForm }) => {
@@ -42,10 +48,11 @@ const SignupForm = () => {
         title: "Account created.",
         description: "We've created your account for you.",
         status: "success",
-        duration: 9000,
+        duration: 2000,
         isClosable: true,
       });
       resetForm({ values: "" });
+      // history("user");
     },
   });
 
@@ -74,7 +81,7 @@ const SignupForm = () => {
             value={formik.values.firstName}
           />
           {formik.touched.firstName && formik.errors.firstName ? (
-            <div>{formik.errors.firstName}</div>
+            <div style={{ color: "red" }}>{formik.errors.firstName}</div>
           ) : null}
 
           <label htmlFor="lastName">Last Name</label>
@@ -87,7 +94,7 @@ const SignupForm = () => {
             value={formik.values.lastName}
           />
           {formik.touched.lastName && formik.errors.lastName ? (
-            <div>{formik.errors.lastName}</div>
+            <div style={{ color: "red" }}>{formik.errors.lastName}</div>
           ) : null}
 
           <label htmlFor="email">Email Address</label>
@@ -100,7 +107,19 @@ const SignupForm = () => {
             value={formik.values.email}
           />
           {formik.touched.email && formik.errors.email ? (
-            <div>{formik.errors.email}</div>
+            <div style={{ color: "red" }}>{formik.errors.email}</div>
+          ) : null}
+          <label htmlFor="email">Password</label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.password}
+          />
+          {formik.touched.password && formik.errors.password ? (
+            <div style={{ color: "red" }}>{formik.errors.password}</div>
           ) : null}
           <Box textAlign="center">
             <Button
@@ -114,7 +133,7 @@ const SignupForm = () => {
           </Box>
         </form>
       </Container>
-      <UserList />
+      {/* <UserList /> */}
     </>
   );
 };

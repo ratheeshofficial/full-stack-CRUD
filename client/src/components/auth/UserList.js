@@ -21,11 +21,29 @@ const UserList = () => {
     });
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+      await axios
+        .delete(`http://localhost:3000/api/user/delete/${id}`)
+        .then((res) => {
+          // console.log(typeof res.data.id);
+          const userFilter = userList.filter(
+            (user) => user._id !== res.data.id //filter returns not a same value
+          );
+          console.log(userFilter);
+          setUserList([...userFilter]);
+        });
+      // console.log(typeof userId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Box width="50">
       <TableContainer>
         {userList.length > 0 &&
           userList.map((user, key) => {
+            // console.log(typeof user._id);
             return (
               <Box textAlign="-moz-center">
                 <Table
@@ -49,7 +67,12 @@ const UserList = () => {
                       <Td>{user.firstName}</Td>
                       <Td>{user.lastName}</Td>
                       <Td>{user.email}</Td>
-                      <Td cursor="pointer">
+                      <Td
+                        cursor="pointer"
+                        onClick={() => {
+                          handleDelete(user._id);
+                        }}
+                      >
                         <MdDelete />
                       </Td>
                     </Tr>

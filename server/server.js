@@ -2,12 +2,13 @@
 const express = require("express");
 const app = express();
 const cors = require("cors"); //to conect api frontend to backend
-
+const bcrypt = require("bcrypt");
+const morgan = require("morgan");
 const mongoose = require("mongoose");
 
 // const userQueries = require("./user/userqueries");
 // const userModel = require("./user/userModel");
-
+app.use(morgan("dev"));
 app.use(express.json()); //to know the json in terminal
 
 app.use(cors()); //to connect api front end and back end
@@ -44,7 +45,7 @@ const loginSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   email: String,
-  // password: String,
+  password: String,
 });
 
 const registerInfo = mongoose.model("register", loginSchema);
@@ -57,23 +58,41 @@ const registerInfo = mongoose.model("register", loginSchema);
 
 app.post("/api/user", async (req, res) => {
   try {
-    console.log(req.body);
-    const firstName = req.body.values.firstName;
-    const lastName = req.body.values.lastName;
-    const email = req.body.values.email;
-
-    console.log(firstName, lastName, email);
-
-    const result = await new registerInfo({
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
+    // console.log(req.body);
+    let isEmailExist = await registerInfo.findOne({
+      email: req.body.values.email,
     });
+    if (isEmailExist) {
+      res.status(500).json({ message: "email already exist" });
+    } else {
+      let genSalt = await bcrypt.genSalt(20);
+      let hashpassword = await bcrypt.hash(req.body.values.password, genSalt);
+      const firstName = req.body.values.firstName;
+      const lastName = req.body.values.lastName;
+      const email = req.body.values.email;
+      const password = hashpassword;
+      const result = await registerInfo({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password,
+      });
+      result.save();
+      console.log(result);
+      res.status(200).json({ success: true, person: result });
+    }
 
-    result.save();
-    res.status(200).json({ success: true, person: result });
+    // console.log(firstName, lastName, email);
+
+    // const oldUser = registerInfo.findOne({ email });
+    // console.log(oldUser);
+
+    // if (oldUser) {
+    //   return res.json({ error: "User Exists" });
+    // }
   } catch (error) {
     console.log(error);
+    res.status(400).json({ success: false });
   }
 });
 
@@ -84,6 +103,67 @@ app.get("/api/user/get", (req, res) => {
     }
     res.send(result);
   });
+});
+
+app.delete("/api/user/delete/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await registerInfo.findByIdAndDelete({ _id: id });
+    res.status(200).json({ success: true, id: id });
+  } catch (error) {
+    console.log("deleted");
+    res.status(500).json({ success: false });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const email = req.body.values.email;
+    console.log(email, "qwert");
+    const password = req.body.values.password;
+    let isEmailExist = await registerInfo.findOne({ email: email });
+
+    if (isEmailExist) {
+      console.log(isEmailExist);
+      let decode = await bcrypt.compare(password, isEmailExist.password);
+      if (decode) {
+        // jwt
+        console.log(decode);
+      } else {
+        res.status(401).json({ message: "password incorrect" });
+      }
+    } else {
+      res.status(401).json({ message: "unAuthorized" });
+    }
+    // res.status(200).json({ message: "success" });
+  } catch (error) {
+    console.log(error);
+  }
+  // const hashPassword = await bcrypt.compare(password, salt);
+  // console.log(email, password, salt, hashPassword);
+  // const findEmail = re
+  // const a = registerInfo.find({}, (err, result) => {
+  //   if (err) {
+  //     res.send(err);
+  //   }
+  //   result.map((data) => {
+  //     if (data.email === email) {
+  //       console.log("success");
+  //     } else {
+  //       console.log("error");
+  //     }
+  //   });
+  //   res.send(result);
+  // });
+  // const a = registerInfo.findOne({ email: email }, (err, result) => {
+  //   return result;
+  // });
+  // console.log(a);
+  // if (a) {
+  //   console.log("success");
+  // } else {
+  //   console.log("error");
+  // }
 });
 
 mongoose.connect(
