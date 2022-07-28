@@ -12,7 +12,7 @@ import {
 import * as Yup from "yup";
 import axios from "axios";
 
-const SignupForm = (props) => {
+const SignupForm = () => {
   const history = useNavigate();
   const toast = useToast();
 
@@ -39,37 +39,32 @@ const SignupForm = (props) => {
 
     onSubmit: (values, { resetForm }) => {
       //   alert(JSON.stringify(values, null, 2));
-      console.log(props.mode, "props.mode");
-      if (props.mode === "edit") {
-        console.log("name", (values.firstName = props.name.firstName));
-      } else {
-        axios
-          .post("http://localhost:3000/api/user", values)
-          .then((res) => {
-            console.log(res, "LLLLLLLLLLLLLLLLLL");
-            res.data.success === true &&
-              toast({
-                title: "Account created.",
-                description: "We've created your account for you.",
-                status: "success",
-                duration: 2000,
-                isClosable: true,
-              });
-            resetForm({ values: "" });
-            history("/login");
-          })
-          .catch((res) => {
-            console.log(res, "AAAAAAAAAAAAAAAA");
-            !res.response.data.success &&
-              toast({
-                title: "Email is already exist",
-                description: "We've Not created your account for you.",
-                status: "error",
-                duration: 2000,
-                isClosable: true,
-              });
-          });
-      }
+      axios
+        .post("http://localhost:3000/api/user", values)
+        .then((res) => {
+          console.log(res, "LLLLLLLLLLLLLLLLLL");
+          res.data.success === true &&
+            toast({
+              title: "Account created.",
+              description: "We've created your account for you.",
+              status: "success",
+              duration: 2000,
+              isClosable: true,
+            });
+          resetForm({ values: "" });
+          history("/login");
+        })
+        .catch((res) => {
+          console.log(res, "AAAAAAAAAAAAAAAA");
+          !res.response.data.success &&
+            toast({
+              title: "Email is already exist",
+              description: "We've Not created your account for you.",
+              status: "error",
+              duration: 2000,
+              isClosable: true,
+            });
+        });
     },
   });
 

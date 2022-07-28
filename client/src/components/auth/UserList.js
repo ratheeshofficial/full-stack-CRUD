@@ -80,27 +80,27 @@ const UserList = () => {
   };
   return (
     <>
-      <Box width="100">
+      <Box>
         <TableContainer>
           {userList.length > 0 &&
             userList.map((user, key) => {
               // console.log(typeof user._id);
               return (
-                <Box textAlign="-moz-center" width="100%">
+                <Box>
                   <Table
                     variant="striped"
                     colorScheme="teal"
                     size="md"
-                    width="100%"
+                    width="70%"
                   >
                     <Thead>
                       <Tr>
-                        <Th width="20%">Id</Th>
-                        <Th width="20%">First Name</Th>
-                        <Th width="20%">LastName</Th>
-                        <Th width="30%">Email</Th>
-                        <Th width="30%">Edit</Th>
-                        <Th width="5%">Delete</Th>
+                        <Th>Id</Th>
+                        <Th>First Name</Th>
+                        <Th>LastName</Th>
+                        <Th>Email</Th>
+                        <Th>Edit</Th>
+                        <Th>Delete</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
