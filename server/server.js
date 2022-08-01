@@ -5,6 +5,7 @@ const cors = require("cors"); //to conect api frontend to backend
 const bcrypt = require("bcrypt");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+var jwt = require("jsonwebtoken");
 
 app.use(morgan("dev"));
 app.use(express.json()); //to know the json in terminal
@@ -18,9 +19,19 @@ const loginSchema = new mongoose.Schema({
   lastName: String,
   email: String,
   password: String,
+  role: {
+    type: String,
+    required: true,
+  },
+});
+
+const blogSchema = new mongoose.Schema({
+  blogTitle: String,
+  blogMessage: String,
 });
 
 const registerInfo = mongoose.model("register", loginSchema);
+const blogRegister = mongoose.model("blogDetails", blogSchema);
 
 app.post("/api/user", async (req, res) => {
   try {
@@ -37,11 +48,13 @@ app.post("/api/user", async (req, res) => {
       const lastName = req.body.lastName;
       const email = req.body.email;
       const password = hashpassword;
+
       const result = await registerInfo({
         firstName: firstName,
         lastName: lastName,
         email: email,
         password: password,
+        role: "user",
       });
       result.save();
       console.log(result);
@@ -56,9 +69,10 @@ app.post("/api/user", async (req, res) => {
 app.get("/api/user/get", (req, res) => {
   registerInfo.find({}, (err, result) => {
     if (err) {
-      res.send(err);
+      res.status(400).json(err);
+    } else {
+      res.status(200).json(result);
     }
-    res.send(result);
   });
 });
 
@@ -99,8 +113,12 @@ app.post("/login", async (req, res) => {
       );
       if (decode) {
         // jwt
-        console.log(decode);
-        res.status(201).json({ success: true, message: "password Matched" });
+        var token = jwt.sign(
+          { id: isEmailExist._id, role: isEmailExist.role },
+          "secretkey"
+        );
+
+        res.status(201).json({ success: true, token: token });
       } else {
         res.status(401).json({ success: false, message: "password incorrect" });
       }
@@ -110,6 +128,53 @@ app.post("/login", async (req, res) => {
     // res.status(200).json({ message: "success" });
   } catch (error) {
     console.log(error);
+  }
+});
+
+app.post("/api/blog", async (req, res) => {
+  const blogData = req.body;
+  await blogRegister(blogData).save();
+  console.log(blogData);
+  try {
+    res.status(200).json({ success: true, blogData });
+  } catch (error) {
+    res.status(400).json({ success: false });
+  }
+});
+
+app.get("/api/blog/get", async (req, res) => {
+  try {
+    blogRegister.find({}, (err, result) => {
+      if (err) {
+        res.status(400).json(err);
+      }
+      res.status(200).json(result);
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.delete("/api/blog/delete/:id", async (req, res) => {
+  const id = req.params.id;
+  await blogRegister.findByIdAndDelete({ _id: id });
+  console.log(id);
+  try {
+    res.status(200).json({ success: true, id: id });
+  } catch (error) {
+    res.status(400).json({ success: false });
+  }
+});
+
+app.put("/api/blog/update/:id", async (req, res) => {
+  const id = req.params.id;
+  const bodyData = req.body;
+  // console.log(id, bodyData);
+  try {
+    await blogRegister.findByIdAndUpdate(id, bodyData, { new: true });
+    res.status(200).json({ success: true, id, bodyData });
+  } catch (error) {
+    res.status(200).json({ success: false, error: error.message });
   }
 });
 

@@ -1,14 +1,26 @@
 import {
   Box,
   Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Table,
   TableContainer,
   Tbody,
   Td,
   Text,
+  Textarea,
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { RiDeleteBinFill } from "react-icons/ri";
@@ -19,12 +31,41 @@ import { NavLink } from "react-router-dom";
 const BlogList = () => {
   const [blogdetails, setBlogDetails] = useState([]);
   // console.log(blogdetails);
+  const [blogData, setBlogData] = useState({});
+  // console.log(blogData);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/blog/get").then((res) => {
-      setBlogDetails(res.data);
-    });
+    if (blogdetails) {
+      // axios.get("http://localhost:3000/api/blog/get").then((res) => {
+      //   setBlogDetails(res.data);
+      // });
+    }
   }, []);
+
+  const updateIcon = (data) => {
+    // console.log("Update icon clicked");
+    setBlogData(data);
+    onOpen();
+  };
+  const handleChange = (e) => {
+    // console.log("Onchange value");
+    const { name, value } = e.target;
+    setBlogData({ ...blogData, [name]: value });
+  };
+
+  const handleUpdate = () => {
+    console.log(blogData._id);
+    axios
+      .put(`http://localhost:3000//api/blog/update/${blogData._id}`, blogData)
+      .then((res) => {
+        setBlogDetails([...blogdetails, res.data.bodyData]);
+      })
+
+      .catch((err) => console.log(err.message));
+    onClose();
+  };
 
   const handleDelete = (id) => {
     try {
@@ -37,7 +78,7 @@ const BlogList = () => {
             (data) => data._id !== res.data.id
           );
           setBlogDetails([...blogFilter]);
-          console.log(blogFilter);
+          // console.log(blogFilter);
         });
     } catch (error) {
       console.log("error");
@@ -64,13 +105,17 @@ const BlogList = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {blogdetails.map((data) => {
+            {blogdetails.map((data, key) => {
               return (
-                <Tr>
+                <Tr key={key + 1}>
                   <Td>{data.blogTitle}</Td>
                   <Td>{data.blogMessage}</Td>
                   <Td>
-                    <FaEdit color="green" cursor="pointer" />
+                    <FaEdit
+                      color="green"
+                      cursor="pointer"
+                      onClick={() => updateIcon(data)}
+                    />
                   </Td>
                   <Td>
                     <RiDeleteBinFill
@@ -85,6 +130,41 @@ const BlogList = () => {
           </Tbody>
         </Table>
       </TableContainer>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Update Blog Post</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+              <FormLabel>Blog Title</FormLabel>
+              <Input
+                placeholder="Update Blog Title"
+                value={blogData.blogTitle ? blogData.blogTitle : ""}
+                name="blogTitle"
+                onChange={handleChange}
+              />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Message</FormLabel>
+              <Textarea
+                placeholder="Update The Blog Message"
+                value={blogData.blogMessage ? blogData.blogMessage : ""}
+                name="blogMessage"
+                onChange={handleChange}
+              />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={handleUpdate}>
+              Update
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

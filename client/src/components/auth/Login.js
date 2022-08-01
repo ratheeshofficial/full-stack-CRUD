@@ -11,6 +11,7 @@ import { useFormik } from "formik";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import jwt_decode from "jwt-decode";
 
 const Login = () => {
   const history = useNavigate();
@@ -36,7 +37,10 @@ const Login = () => {
         .post("http://localhost:3000/login", values)
         .then((res) => {
           console.log(res, " then");
-          res.data.success === true &&
+          window.localStorage.setItem("token", res.data.token);
+          var decoded = jwt_decode(res.data.token);
+          console.log(decoded, "token");
+          if (decoded.role === "admin") {
             toast({
               title: "Login Successfully",
               description: "We've created your account for you.",
@@ -44,8 +48,21 @@ const Login = () => {
               duration: 2000,
               isClosable: true,
             });
+            // admin page
+            history("/user");
+          } else {
+            toast({
+              title: "Login Successfully",
+              description: "We've created your account for you.",
+              status: "success",
+              duration: 2000,
+              isClosable: true,
+            });
+            // user page
+            history("/home");
+          }
+
           resetForm({ values: "" });
-          history("/user");
         })
         .catch((res) => {
           console.log(res, " catch");
