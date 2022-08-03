@@ -1,21 +1,35 @@
 import {
   Box,
   Button,
+  Center,
   Container,
+  Flex,
   Input,
+  InputGroup,
+  InputRightElement,
+  Link,
+  SimpleGrid,
   Text,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useFormik } from "formik";
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { NavLink as RouterLink, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import jwt_decode from "jwt-decode";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 const Login = () => {
   const history = useNavigate();
   const toast = useToast();
+
+  const [passwordShown, setPasswordShown] = useState(false);
+
+  const togglePassword = () => {
+    console.log("show Password");
+    setPasswordShown(passwordShown ? false : true);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -49,7 +63,7 @@ const Login = () => {
               isClosable: true,
             });
             // admin page
-            history("/user");
+            history("/home");
           } else {
             toast({
               title: "Login Successfully",
@@ -80,47 +94,85 @@ const Login = () => {
 
   return (
     <>
-      <Container>
-        <Text fontSize="3xl" textAlign="center">
-          Login
-        </Text>
-        <form onSubmit={formik.handleSubmit}>
-          <label htmlFor="email">Email Address</label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.email}
-          />
-          {formik.touched.email && formik.errors.email ? (
-            <div style={{ color: "red" }}>{formik.errors.email}</div>
-          ) : null}
-          <label htmlFor="email">Password</label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.password}
-          />
-          {formik.touched.password && formik.errors.password ? (
-            <div style={{ color: "red" }}>{formik.errors.password}</div>
-          ) : null}
-          <Box textAlign="center">
-            <Button
-              colorScheme="blue"
-              justifyContent="center"
-              mt="5"
-              type="submit"
-            >
-              Submit
-            </Button>
-          </Box>
-        </form>
-      </Container>
+      <SimpleGrid columns={2} spacing={0}>
+        <Box bg="#e3e3e3"></Box>
+        <Flex h="100vh" justifyContent="center">
+          <Center>
+            <Container>
+              <Text fontSize="3xl" textAlign="center">
+                Login
+              </Text>
+              <form onSubmit={formik.handleSubmit}>
+                <label htmlFor="email">Email Address</label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.email}
+                />
+                {formik.touched.email && formik.errors.email ? (
+                  <div style={{ color: "red" }}>{formik.errors.email}</div>
+                ) : null}
+                <label htmlFor="email">Password</label>
+                <InputGroup>
+                  <Input
+                    id="password"
+                    name="password"
+                    type={passwordShown ? "text" : "password"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.password}
+                  />
+                  <InputRightElement
+                    children={
+                      passwordShown ? (
+                        <AiFillEye
+                          fontSize="22px"
+                          cursor="pointer"
+                          onClick={() => togglePassword()}
+                        />
+                      ) : (
+                        <AiFillEyeInvisible
+                          fontSize="22px"
+                          cursor="pointer"
+                          onClick={() => togglePassword()}
+                        />
+                      )
+                    }
+                  />
+                </InputGroup>
+                {formik.touched.password && formik.errors.password ? (
+                  <div style={{ color: "red" }}>{formik.errors.password}</div>
+                ) : null}
+                <Box textAlign="right" mt="2">
+                  Don't have an account ?
+                  <Link
+                    pl="2"
+                    as={RouterLink}
+                    to="/signup"
+                    color="#2c5282"
+                    textDecoration="underline"
+                  >
+                    Signup
+                  </Link>
+                </Box>
+                <Box textAlign="center">
+                  <Button
+                    colorScheme="blue"
+                    justifyContent="center"
+                    mt="5"
+                    type="submit"
+                  >
+                    Submit
+                  </Button>
+                </Box>
+              </form>
+            </Container>
+          </Center>
+        </Flex>
+      </SimpleGrid>
     </>
   );
 };
