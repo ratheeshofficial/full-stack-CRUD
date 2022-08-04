@@ -7,7 +7,6 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -31,18 +30,6 @@ import { React, useEffect, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import Layout from "../common/Layout";
 import jwt_decode from "jwt-decode";
-const Comment = () => {
-  return (
-    <>
-      <Input />
-      <Box textAlign="right" mt="2">
-        <Button bg="#0BC5EA" _hover="#0BC5EA">
-          Post
-        </Button>
-      </Box>
-    </>
-  );
-};
 
 const BlogList = () => {
   const [blogdetails, setBlogDetails] = useState([]);
@@ -52,20 +39,20 @@ const BlogList = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [inputBox, setInputBox] = useState();
-
-  const addInput = () => {
-    setInputBox(() => {
-      return <Comment />;
-    });
+  const getAll = async () => {
+    try {
+      if (blogdetails) {
+        let getData = await axios.get("http://localhost:3000/api/blog/get");
+        setBlogDetails(getData.data);
+      }
+    } catch (error) {
+      console.log("error");
+      alert("error");
+    }
   };
 
   useEffect(() => {
-    if (blogdetails) {
-      axios.get("http://localhost:3000/api/blog/get").then((res) => {
-        setBlogDetails(res.data);
-      });
-    }
+    getAll();
   }, []);
 
   const updateIcon = (data) => {
@@ -79,16 +66,19 @@ const BlogList = () => {
     setBlogData({ ...blogData, [name]: value });
   };
 
-  const handleUpdate = () => {
-    console.log(blogData._id);
-    axios
-      .put(`http://localhost:3000//api/blog/update/${blogData._id}`, blogData)
-      .then((res) => {
-        setBlogDetails([...blogdetails, res.data.bodyData]);
-      })
-
-      .catch((err) => console.log(err.message));
-    onClose();
+  const handleUpdate = async () => {
+    // console.log(blogData._id);
+    try {
+      await axios.put(
+        `http://localhost:3000//api/blog/update/${blogData._id}`,
+        blogData
+      );
+      onClose();
+      getAll();
+    } catch (error) {
+      console.log(error);
+      alert("error");
+    }
   };
 
   const handleDelete = (id) => {
@@ -112,11 +102,6 @@ const BlogList = () => {
   var decoded = jwt_decode(auth);
   console.log(decoded, "auth");
 
-  const handleView = (data) => {
-    setBlogData(data);
-    console.log(data, "data");
-    onOpen();
-  };
   return (
     <>
       <Layout>
@@ -132,7 +117,7 @@ const BlogList = () => {
         {decoded.role === "admin" && (
           <Box textAlign="right" pr="3" mb="5">
             <Button colorScheme="blue">
-              <NavLink to="/blogform">+ New Blog</NavLink>
+              <Link to="/blogform">+ New Blog</Link>
             </Button>
           </Box>
         )}
@@ -198,11 +183,11 @@ const BlogList = () => {
 
         {/* Update Modal */}
         {decoded.role === "admin" && (
-          <Modal isOpen={isOpen} onClose={onClose}>
+          <Modal isOpen={isOpen} size="full" onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>Update Blog Post</ModalHeader>
-              <ModalCloseButton />
+              {/* <ModalCloseButton /> */}
               <ModalBody pb={6}>
                 <FormControl>
                   <FormLabel>Blog Title</FormLabel>
@@ -217,6 +202,7 @@ const BlogList = () => {
                 <FormControl mt={4}>
                   <FormLabel>Message</FormLabel>
                   <Textarea
+                    h="20em"
                     placeholder="Update The Blog Message"
                     value={blogData.blogMessage ? blogData.blogMessage : ""}
                     name="blogMessage"
@@ -234,37 +220,6 @@ const BlogList = () => {
             </ModalContent>
           </Modal>
         )}
-
-        {/* {decoded.role === "user" && (
-          <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader> Blog View</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody pb={6}>
-                <FormControl>
-                  <FormLabel>
-                    Title :{" "}
-                    {blogData.blogTitle ? blogData.blogTitle : "Title Error"}
-                  </FormLabel>
-                </FormControl>
-
-                <FormControl mt={4}>
-                  <FormLabel>
-                    Message :{" "}
-                    {blogData.blogMessage
-                      ? blogData.blogMessage
-                      : "Message error"}
-                  </FormLabel>
-                </FormControl>
-                <Box mb="4">{inputBox}</Box>
-                <Button colorScheme="blue" mr={3} onClick={addInput}>
-                  Reply
-                </Button>
-              </ModalBody>
-            </ModalContent>
-          </Modal>
-        )} */}
       </Layout>
     </>
   );

@@ -1,14 +1,17 @@
 import { useNavigate } from "react-router-dom";
 
-// export const useAuth = () => {
-//   const auth = localStorage.getItem("auth");
-//   console.log(auth);
-// };
+const navigate = useNavigate;
+
+export const useLogin = () => {
+  // const login = localStorage.getItem("token");
+  // console.log(login);
+  navigate("/login");
+};
 
 export const useLogout = () => {
-  const navigate = useNavigate;
   const logout = () => {
-    localStorage.removeItem("token");
+    // localStorage.removeItem("token");
+    localStorage.clear();
     navigate("/login");
   };
   return logout;

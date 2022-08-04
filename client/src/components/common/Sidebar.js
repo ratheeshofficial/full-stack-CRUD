@@ -6,7 +6,7 @@ const Sidebar = () => {
     <Box bg="#dfdfdf" h="100%" minH="100vh" p={5} left={0} top={0}>
       <VStack>
         <Button w="100%">
-          <NavLink pr="3" to="/">
+          <NavLink pr="3" to="#">
             Home
           </NavLink>
         </Button>

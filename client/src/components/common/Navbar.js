@@ -1,33 +1,37 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Flex,
-  Heading,
-  Spacer,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Spacer } from "@chakra-ui/react";
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { useLogout } from "../services/auth";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const logout = useLogout();
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+  // console.log(token);
+
+  const login = () => {
+    navigate("/login");
+  };
+
+  const logout = () => {
+    const logout = localStorage.clear();
+    console.log(logout, "logout");
+    navigate("/login");
+  };
+
   return (
     <Flex pos="sticky">
       <Box p="2">
         <Heading size="md">
-          <NavLink to="/">Web App</NavLink>
+          <NavLink to="#">Web App</NavLink>
         </Heading>
       </Box>
       <Spacer />
       <Box mr="3">
-        <ButtonGroup gap="2">
-          <Button>
-            <NavLink pr="3" to="/login">
-              Login
-            </NavLink>
-          </Button>
-        </ButtonGroup>
+        {token !== null ? (
+          <Button onClick={() => logout()}>Logout</Button>
+        ) : (
+          <Button onClick={() => login()}>Login</Button>
+        )}
       </Box>
     </Flex>
   );

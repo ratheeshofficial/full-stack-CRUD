@@ -1,16 +1,19 @@
-import { Button, Container, Flex, Text } from "@chakra-ui/react";
+import { Box, Container, Flex, Text } from "@chakra-ui/react";
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { BackBtn } from "../common/BackBtn";
 
 function BlogPage() {
   const location = useLocation();
   //   const { from } = location.state;
-  const navigate = useNavigate();
-  console.log(location);
+  // console.log(location);
   return (
     <>
       <Flex>
-        <Button onClick={() => navigate(-1)}>Back</Button>
+        {/* <Button onClick={() => navigate(-1)}>Back</Button> */}
+        <Box ml="5" mt="5">
+          <BackBtn />
+        </Box>
         <Container my="4">
           <Text textAlign="center" fontWeight="bold" fontSize="5xl">
             {location.state.blogTitle}

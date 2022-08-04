@@ -1,5 +1,4 @@
 import {
-  Button,
   Flex,
   Table,
   TableContainer,
@@ -13,14 +12,12 @@ import {
 import axios from "axios";
 import { GrView } from "react-icons/gr";
 import { React, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Layout from "../../common/Layout";
 
 const ViewBlog = () => {
   const [blogdetails, setBlogDetails] = useState([]);
   // console.log(blogdetails);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (blogdetails) {

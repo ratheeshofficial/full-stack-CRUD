@@ -11,10 +11,11 @@ import { useFormik } from "formik";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { BackBtn } from "../common/BackBtn";
 import Layout from "../common/Layout";
 
-const BlogHome = () => {
-  const history = useNavigate();
+const BlogForm = () => {
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
@@ -27,28 +28,28 @@ const BlogHome = () => {
       blogMessage: Yup.string().required("No Message provided."),
     }),
 
-    onSubmit: (values, { resetForm }) => {
-      //   alert(JSON.stringify(values, null, 2));
-
-      axios
-        .post("http://localhost:3000/api/blog", values)
-        .then((res) => {
-          console.log(res, " then");
-
-          resetForm({ values: "" });
-          history("/home");
-        })
-        .catch((res) => {
-          console.log(res, " catch");
-        });
+    onSubmit: async (values, { resetForm }) => {
+      console.log(values);
+      try {
+        await axios.post("http://localhost:3000/api/blog", values);
+        resetForm();
+        navigate("/home");
+      } catch (error) {
+        alert("error");
+        resetForm();
+        console.log(error);
+      }
     },
   });
 
   return (
     <>
       <Layout>
+        <Box ml="5" mt="5">
+          <BackBtn />
+        </Box>
         <Container>
-          <Text fontSize="3xl" textAlign="center">
+          <Text fontSize="3xl" textAlign="center" fontWeight="bold">
             Create Blog
           </Text>
           <form onSubmit={formik.handleSubmit}>
@@ -96,4 +97,4 @@ const BlogHome = () => {
   );
 };
 
-export default BlogHome;
+export default BlogForm;

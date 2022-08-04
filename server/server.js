@@ -33,7 +33,7 @@ const blogSchema = new mongoose.Schema({
 const registerInfo = mongoose.model("register", loginSchema);
 const blogRegister = mongoose.model("blogDetails", blogSchema);
 
-app.post("/api/user", async (req, res) => {
+app.post("/signup", async (req, res) => {
   try {
     // console.log(req.body);
     let isEmailExist = await registerInfo.findOne({
@@ -107,10 +107,7 @@ app.post("/login", async (req, res) => {
     if (isEmailExist) {
       console.log(isEmailExist);
 
-      let decode = await bcrypt.compare(
-        req.body.password,
-        isEmailExist.password
-      );
+      let decode = bcrypt.compare(req.body.password, isEmailExist.password);
       if (decode) {
         // jwt
         var token = jwt.sign(
@@ -130,6 +127,8 @@ app.post("/login", async (req, res) => {
     console.log(error);
   }
 });
+
+// ======  Blog Api =============
 
 app.post("/api/blog", async (req, res) => {
   const blogData = req.body;
