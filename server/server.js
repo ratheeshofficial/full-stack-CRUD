@@ -5,8 +5,10 @@ const cors = require("cors"); //to conect api frontend to backend
 const bcrypt = require("bcrypt");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const path = require("path");
 var jwt = require("jsonwebtoken");
 
+app.use(express.static(path.join(__dirname + "/public")));
 app.use(morgan("dev"));
 app.use(express.json()); //to know the json in terminal
 
@@ -179,6 +181,8 @@ app.put("/api/blog/update/:id", async (req, res) => {
 
 mongoose.connect(
   "mongodb://localhost:27017/testDB",
+  // "mongodb://guru:123456@registers.w0vl1.mongodb.net/testDB",
+  // "mongodb://admin@gmail.com:password@cluster0:27017/testDB",
   { useNewUrlParser: true, useUnifiedTopology: true },
   (err) => {
     if (!err) {
