@@ -180,8 +180,9 @@ app.put("/api/blog/update/:id", async (req, res) => {
 });
 
 mongoose.connect(
-  "mongodb://localhost:27017/testDB",
-  // "mongodb://guru:123456@registers.w0vl1.mongodb.net/testDB",
+  "mongodb+srv://ratheesh:ratheesh@cluster0.nhiyjv8.mongodb.net/MERN",
+  // "mongodb+srv://guru:123456@MongoDB.mongodb.net/testDB",
+  // "mongodb+srv://guru:javaScript-123456@cluster0.8fybz.mongodb.net/testDB",
   // "mongodb://admin@gmail.com:password@cluster0:27017/testDB",
   { useNewUrlParser: true, useUnifiedTopology: true },
   (err) => {
