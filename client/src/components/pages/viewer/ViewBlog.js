@@ -17,11 +17,11 @@ import Layout from "../../common/Layout";
 
 const ViewBlog = () => {
   const [blogdetails, setBlogDetails] = useState([]);
-  // console.log(blogdetails);
+  console.log(blogdetails);
 
   useEffect(() => {
     if (blogdetails) {
-      axios.get("http://localhost:3000/api/blog/get").then((res) => {
+      axios.get("https://blogwheel.herokuapp.com/api/blog/get").then((res) => {
         setBlogDetails(res.data);
       });
     }

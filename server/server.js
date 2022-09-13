@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const path = require("path");
 var jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 app.use(express.static(path.join(__dirname + "/public")));
 app.use(morgan("dev"));
@@ -106,11 +107,13 @@ app.post("/login", async (req, res) => {
     let isEmailExist = await registerInfo.findOne({
       email: req.body.email,
     });
+    console.log(req.body.email);
     if (isEmailExist) {
       console.log(isEmailExist);
 
       let decode = bcrypt.compare(req.body.password, isEmailExist.password);
       if (decode) {
+        console.log("decode", decode);
         // jwt
         var token = jwt.sign(
           { id: isEmailExist._id, role: isEmailExist.role },
@@ -127,6 +130,7 @@ app.post("/login", async (req, res) => {
     // res.status(200).json({ message: "success" });
   } catch (error) {
     console.log(error);
+    res.status(401).json({ message: error });
   }
 });
 
@@ -179,21 +183,25 @@ app.put("/api/blog/update/:id", async (req, res) => {
   }
 });
 
-mongoose.connect(
-  "mongodb+srv://ratheesh:ratheesh@cluster0.nhiyjv8.mongodb.net/MERN",
-  // "mongodb+srv://guru:123456@MongoDB.mongodb.net/testDB",
-  // "mongodb+srv://guru:javaScript-123456@cluster0.8fybz.mongodb.net/testDB",
-  // "mongodb://admin@gmail.com:password@cluster0:27017/testDB",
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  (err) => {
-    if (!err) {
-      console.log("db connected");
-    } else {
-      console.log("db error");
-    }
-  }
-);
+const PORT = process.env.PORT;
 
-app.listen(5000, () => {
-  console.log("server is started in 5000...");
-});
+mongoose
+  .connect(
+    // "mongodb+srv://ratheesh:ratheesh@cluster0.nhiyjv8.mongodb.net/MERN",
+    "mongodb+srv://ratheesh:ratheesh@cluster0.nhiyjv8.mongodb.net/MERN?retryWrites=true&w=majority",
+    // "mongodb://localhost:27017/MERN",
+    { useNewUrlParser: true, useUnifiedTopology: true }
+    // (err) => {
+    //   if (!err) {
+    //     console.log("db connected");
+    //   } else {
+    //     console.log("db error");
+    //   }
+    // }
+  )
+  .then(() =>
+    app.listen(PORT || 5000, () => {
+      console.log(`server is started in ${PORT}`);
+    })
+  )
+  .catch((error) => console.log(error.message));

@@ -33,7 +33,6 @@ import jwt_decode from "jwt-decode";
 
 const BlogList = () => {
   const [blogdetails, setBlogDetails] = useState([]);
-  // console.log(blogdetails);
   const [blogData, setBlogData] = useState({});
   // console.log(blogData);
 
@@ -42,8 +41,11 @@ const BlogList = () => {
   const getAll = async () => {
     try {
       if (blogdetails) {
-        let getData = await axios.get("http://localhost:3000/api/blog/get");
+        let getData = await axios.get(
+          "https://blogwheel.herokuapp.com/api/blog/get"
+        );
         setBlogDetails(getData.data);
+        console.log(getData);
       }
     } catch (error) {
       console.log("error");
@@ -70,7 +72,7 @@ const BlogList = () => {
     // console.log(blogData._id);
     try {
       await axios.put(
-        `http://localhost:3000//api/blog/update/${blogData._id}`,
+        `https://blogwheel.herokuapp.com/api/blog/update/${blogData._id}`,
         blogData
       );
       onClose();
@@ -84,7 +86,7 @@ const BlogList = () => {
   const handleDelete = (id) => {
     try {
       axios
-        .delete(`http://localhost:3000/api/blog/delete/${id}`)
+        .delete(`https://blogwheel.herokuapp.com/api/blog/delete/${id}`)
         .then((res) => {
           // console.log(res);
 
@@ -100,7 +102,7 @@ const BlogList = () => {
   };
   const auth = window.localStorage.getItem("token");
   var decoded = jwt_decode(auth);
-  console.log(decoded, "auth");
+  // console.log(decoded, "auth");
 
   return (
     <>
@@ -139,43 +141,51 @@ const BlogList = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {blogdetails.map((data, key) => {
-                  return (
-                    <Tr key={key + 1}>
-                      {/* <Link to="/blogPage" state={{ from: blogData }}>
+                {blogdetails &&
+                  blogdetails.map((data, key) => {
+                    return (
+                      <Tr key={key + 1}>
+                        {/* <Link to="/blogPage" state={{ from: blogData }}>
                       {data.blogTitle}
                     </Link> */}
-                      <Td>{data.blogTitle}</Td>
+                        <Td>{data.blogTitle}</Td>
 
-                      {decoded.role === "admin" && (
-                        <>
-                          <Td>{data.blogMessage}</Td>
+                        {decoded.role === "admin" && (
+                          <>
+                            <Td
+                              textOverflow="ellipsis"
+                              whiteSpace="nowrap"
+                              overflow="hidden"
+                              maxW="300"
+                            >
+                              {data.blogMessage}
+                            </Td>
 
-                          <Td>
-                            <FaEdit
-                              color="green"
-                              cursor="pointer"
-                              onClick={() => updateIcon(data)}
-                            />
-                          </Td>
-                          <Td>
-                            <RiDeleteBinFill
-                              color="#b50505de"
-                              cursor="pointer"
-                              onClick={() => handleDelete(data._id)}
-                            />
-                          </Td>
-                        </>
-                      )}
+                            <Td>
+                              <FaEdit
+                                color="green"
+                                cursor="pointer"
+                                onClick={() => updateIcon(data)}
+                              />
+                            </Td>
+                            <Td>
+                              <RiDeleteBinFill
+                                color="#b50505de"
+                                cursor="pointer"
+                                onClick={() => handleDelete(data._id)}
+                              />
+                            </Td>
+                          </>
+                        )}
 
-                      <Td>
-                        <Link to="/blogPage" state={data}>
-                          <GrView color="#b50505de" cursor="pointer" />
-                        </Link>
-                      </Td>
-                    </Tr>
-                  );
-                })}
+                        <Td>
+                          <Link to="/blogPage" state={data}>
+                            <GrView color="#b50505de" cursor="pointer" />
+                          </Link>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
               </Tbody>
             </Table>
           </TableContainer>

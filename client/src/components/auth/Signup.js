@@ -54,7 +54,7 @@ const SignupForm = () => {
     onSubmit: (values, { resetForm }) => {
       //   alert(JSON.stringify(values, null, 2));
       axios
-        .post("http://localhost:3000/signup", values)
+        .post("https://blogwheel.herokuapp.com/signup", values)
         .then((res) => {
           console.log(res, "LLLLLLLLLLLLLLLLLL");
           res.data.success === true &&

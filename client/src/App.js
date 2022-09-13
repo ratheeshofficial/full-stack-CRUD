@@ -8,6 +8,7 @@ import BlogForm from "./components/blog/BlogForm";
 import BlogList from "./components/blog/BlogList";
 import BlogPage from "./components/blog/BlogPage";
 import ViewBlog from "./components/pages/viewer/ViewBlog";
+import QuillTextEditor from "./components/common/QuillTextEditor";
 
 function App() {
   // useEffect(() => {
@@ -26,6 +27,7 @@ function App() {
         <Route path="/home" element={<BlogList />} />
         <Route path="/blogform" element={<BlogForm />} />
         <Route path="/blogPage" element={<BlogPage />} />
+        <Route path="/quill" element={<QuillTextEditor />} />
       </Routes>
     </div>
   );

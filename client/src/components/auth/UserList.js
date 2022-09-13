@@ -35,7 +35,7 @@ const UserList = () => {
   const finalRef = React.useRef(null);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/user/get").then((res) => {
+    axios.get("https://blogwheel.herokuapp.com/api/user/get").then((res) => {
       setUserList(res.data);
     });
   }, []);
@@ -55,7 +55,7 @@ const UserList = () => {
     console.log("button Clicked");
     console.log(updateUser._id, updateUser);
     axios.put(
-      `http://localhost:3000/api/user/update/${updateUser._id}`,
+      `https://blogwheel.herokuapp.com/api/user/update/${updateUser._id}`,
       updateUser
     );
     onClose();
@@ -64,7 +64,7 @@ const UserList = () => {
   const handleDelete = async (id) => {
     try {
       await axios
-        .delete(`http://localhost:3000/api/user/delete/${id}`)
+        .delete(`https://blogwheel.herokuapp.com/api/user/delete/${id}`)
         .then((res) => {
           // console.log(typeof res.data.id);
           const userFilter = userList.filter(

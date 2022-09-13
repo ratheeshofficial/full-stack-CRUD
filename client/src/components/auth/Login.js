@@ -48,7 +48,7 @@ const Login = () => {
       //   alert(JSON.stringify(values, null, 2));
 
       axios
-        .post("http://localhost:3000/login", values)
+        .post("https://blogwheel.herokuapp.com/login", values)
         .then((res) => {
           console.log(res, " then");
           window.localStorage.setItem("token", res.data.token);
